@@ -1,0 +1,9 @@
+mysimplefoc1\delay.o: ..\Core\Src\delay.c
+mysimplefoc1\delay.o: ../Core/Inc/delay.h
+mysimplefoc1\delay.o: ../Core/Inc/stm32f10x.h
+mysimplefoc1\delay.o: ../Drivers/CMSIS/Include/core_cm3.h
+mysimplefoc1\delay.o: F:\keil5_plus\ARM\ARMCC\Bin\..\include\stdint.h
+mysimplefoc1\delay.o: ../Drivers/CMSIS/Include/cmsis_version.h
+mysimplefoc1\delay.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+mysimplefoc1\delay.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+mysimplefoc1\delay.o: F:\keil5_plus\Keil\STM32F1xx_DFP\2.4.1\Device\Include\system_stm32f10x.h
