@@ -1,12 +1,37 @@
 # STM32F103 + SimpleFOC：从开环到三环的无刷电机矢量控制
 
-用 STM32F103C8T6 + HAL 库把 SimpleFOC 的 FOC 算法重新实现一遍，并按**开环 → 速度闭环 → 电流环 → 三环可切换**分成四个独立工程。每个工程都是一个可以直接编译下载的 CubeMX + Keil 工程，适合作为「看懂 FOC 到底在算什么」的学习路线，也适合拿来做自制驱动器的控制固件起点。
+基于 **STM32F103C8T6 + STM32 HAL** 的无刷电机 FOC 控制项目，参考 SimpleFOC 的算法结构，按 **开环 → 速度 / 位置闭环 → 电流环 → 三环可切换** 整理为四个独立工程。
+
+覆盖磁编码器反馈、SVPWM、电流采样、PID 与串口调参，提供 CubeMX 配置和 Keil 工程，便于沿着控制链路阅读代码、调试硬件与对比不同控制模式。
 
 ![MCU](https://img.shields.io/badge/MCU-STM32F103C8T6-blue)
 ![Toolchain](https://img.shields.io/badge/Toolchain-Keil%20MDK%205-informational)
 ![Framework](https://img.shields.io/badge/Framework-STM32Cube%20HAL-03234B)
 ![Algorithm](https://img.shields.io/badge/Algorithm-SimpleFOC%20port-green)
 ![PWM](https://img.shields.io/badge/PWM-50%20kHz-orange)
+
+**[实物展示](#实物展示) · [工程导航](#四个工程四条演进线) · [快速开始](#快速开始) · [接线表](#接线表) · [串口调参](#串口调参与遥测)**
+
+## 实物展示
+
+![无刷电机与驱动板实物：左侧为电机侧面，右侧为圆形电路板与串口连接](docs/images/motor-hardware.png)
+
+电机与驱动板的两个视角，展示电机装配、圆形电路板及 USB 转串口连接。图片随页面直接加载，无需展开或跳转。
+
+| 控制算法 | 传感与采样 | 工程实现 |
+| --- | --- | --- |
+| SVPWM、Clarke / Park 变换、位置 / 速度 / 电流控制 | AS5600 角度反馈、双通道 ADC + DMA | STM32 HAL、CubeMX + Keil、串口参数调整与遥测 |
+
+### 从开环到三环
+
+```mermaid
+flowchart LR
+    A[开环驱动] --> B[编码器反馈与速度 / 位置闭环]
+    B --> C[电流采样与 dq 电流环]
+    C --> D[三环控制与转矩模式切换]
+```
+
+实物照片用于展示硬件形态；具体控制模式、引脚与参数以对应工程代码为准。
 
 ---
 
@@ -177,7 +202,7 @@ while (1) {
 - **电流采样函数有小瑕疵**：`_readADCVoltageInline()` 里 `ch==8` 分支返回的仍是 `value1`（看起来是复制粘贴笔误），且 `value1/value2` 在每次采样前没有清零，长期运行会漂移。做电流环前建议先修这两处。
 - **目录名含中文和空格**：`mysimplefoc1-电流 - 三环选择` 在部分命令行/CI 环境下需要额外引号处理，建议改为 `mysimplefoc1-current-3loop` 之类的英文名。
 - **没有 LICENSE**：目前未声明许可，第三方无法明确复用范围。
-- **缺实物图与演示**：展示页加一张接线照 + 一段电机转起来/位置阶跃的 GIF，说服力会比纯文字强很多（可放在 `docs/` 下再引用）。
+- **动态演示待补充**：已提供实物照片；后续可补充电机运行视频、位置阶跃响应和串口遥测曲线，展示控制效果。
 
 ## 致谢与许可
 
